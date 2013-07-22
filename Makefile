@@ -39,13 +39,13 @@ manpage: $(DOC)/$(PROGNAME).man.asciidoc
 
 deb64: 
 	checkinstall -D --arch=amd64 --pkgname=$(PROGNAME) --pkgsource=$(SRC_URL) --pkgversion=$(VERSION) --pkgrelease=$(RELEASE) \
-	--maintainer=$(MAINTAINER) --pkglicense=$(LICENSE) --pkggroup="shellutils" --requires="liblo7,libncurses5-dev" --install=no make install
+	--maintainer=$(MAINTAINER) --pkglicense=$(LICENSE) --pkggroup="shellutils" --requires="liblo7,libncurses5" --install=no make install
 deb32: 
 	checkinstall -D --arch=i386 --pkgname=$(PROGNAME) --pkgsource=$(SRC_URL) --pkgversion=$(VERSION) --pkgrelease=$(RELEASE) \
-	--maintainer=$(MAINTAINER) --pkglicense=$(LICENSE) --pkggroup="shellutils" --requires="liblo7,libncurses5-dev" --install=no make install
+	--maintainer=$(MAINTAINER) --pkglicense=$(LICENSE) --pkggroup="shellutils" --requires="liblo7,libncurses5" --install=no make install
 debarmhf: 
 	checkinstall -D --arch=armhf --pkgname=$(PROGNAME) --pkgsource=$(SRC_URL) --pkgversion=$(VERSION) --pkgrelease=$(RELEASE) \
-	--maintainer=$(MAINTAINER) --pkglicense=$(LICENSE) --pkggroup="shellutils" --requires="liblo7,libncurses5-dev" --install=no make install
+	--maintainer=$(MAINTAINER) --pkglicense=$(LICENSE) --pkggroup="shellutils" --requires="liblo7,libncurses5" --install=no make install
 
 install: $(PROGNAME)
 	mkdir -p $(DESTDIR)$(INSTALLDIR)/
