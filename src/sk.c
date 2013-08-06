@@ -57,10 +57,12 @@ const char* osc_send_to_port = "7778";
 lo_server_thread st;
 lo_address loa;
 
-static double version=0.1;
+static double version=0.2;
 
 int verbose = 1;
 int quiet = 0;
+
+int indicationCounter = 0;
 
 //curses win
 WINDOW * mainwin;
@@ -207,21 +209,51 @@ int main (int argc, char *argv[])
 		sendKey(ch,checkKey(ch));
 
 		deleteln();
-		if(quiet==0)
+		if(quiet==0 && verbose==1)
 		{
-			if(verbose==1)
+			mvprintw(lastLine,indent, "0x%x", ch);
+			mvprintw(lastLine,indent+8, "%s", checkKey(ch));
+			if(indicationCounter>7)
 			{
-				mvprintw(lastLine,indent, "0x%x", ch);
-				mvprintw(lastLine,indent+8, "%s", checkKey(ch));
+				indicationCounter=0;
 			}
-			else
+
+			switch(indicationCounter)
 			{
-				mvprintw(lastLine,indent, "%s", checkKey(ch));
+				case 0:
+					mvprintw(lastLine,indent+20, "(|)");
+					break;
+				case 1:
+					mvprintw(lastLine,indent+20, "(/)");
+					break;
+				case 2:
+					mvprintw(lastLine,indent+20, "(-)");
+					break;
+				case 3:
+					mvprintw(lastLine,indent+20, "(\\)");
+					break;
+				case 4:
+					mvprintw(lastLine,indent+20, "(|)");
+					break;
+				case 5:
+					mvprintw(lastLine,indent+20, "(/)");
+					break;
+				case 6:
+					mvprintw(lastLine,indent+20, "(-)");
+					break;
+				case 7:
+					mvprintw(lastLine,indent+20, "(\\)");
+					break;
 			}
+
+			indicationCounter++;
+		}
+		else if(quiet==0)
+		{
+			mvprintw(lastLine,indent, "%s", checkKey(ch));
 		}
 		refresh();
 	}
-
 } //end main
 
 //handle printable and non-printable chars

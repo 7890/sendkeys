@@ -42,7 +42,7 @@ DESCRIPTION
        space, backspace, delete, enter, arrow keys, page keys, home, end, insert, tabulator,
        escape
 
-       sk version is 0.1
+       sk version is 0.2
 
 OPTIONS
        -h, --help
