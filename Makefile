@@ -6,6 +6,7 @@ PREFIX ?= /usr/local
 INSTALLDIR ?= $(PREFIX)/bin
 MANDIR ?= $(PREFIX)/share/man/man1
 PROGNAME ?= sk
+PROGNAME_ALT ?= sendkeys
 
 LO_FLAGS ?= $(shell pkg-config --cflags --libs liblo)
 #-I/usr/local/include  -L/usr/local/lib 
@@ -51,10 +52,12 @@ install: $(PROGNAME)
 	mkdir -p $(DESTDIR)$(INSTALLDIR)/
 	mkdir -p $(DESTDIR)$(MANDIR)/
 	install -m755 $(PROGNAME) $(DESTDIR)$(INSTALLDIR)/
+	ln $(DESTDIR)$(INSTALLDIR)/$(PROGNAME) $(DESTDIR)$(INSTALLDIR)/$(PROGNAME_ALT) 
 	install -m644 $(DOC)/$(PROGNAME).1.gz $(DESTDIR)$(MANDIR)/
 
 uninstall:
 	rm -f $(DESTDIR)$(INSTALLDIR)/$(PROGNAME)
+	rm -f $(DESTDIR)$(INSTALLDIR)/$(PROGNAME_ALT)
 	rm -f $(DESTDIR)$(MANDIR)/$(PROGNAME).1.gz
 
 clean:
