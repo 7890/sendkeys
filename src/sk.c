@@ -40,8 +40,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 *
 */
 
-lo_server_thread st;
-
 void error(int num, const char *m, const char *path);
 static void signal_handler(int sig);
 void sendKey(int key,char *ckey);
