@@ -39,16 +39,16 @@ all: $(PROGNAME) $(PROGNAME)_static manpage
 
 $(PROGNAME): $(SRC)/$(PROGNAME).c
 	$(CC) $(SRC)/$(PROGNAME).c -o $(PROGNAME) $(CFLAGS) $(LO_FLAGS) $(CURSES_FLAGS)
-	ldd sk
-	du -h sk
+	ldd $(PROGNAME)
+	du -h $(PROGNAME)
 
 #test
 $(PROGNAME)_static: $(SRC)/$(PROGNAME).c
 #	@echo $(STATIC_LIBS)
 	$(CC) -static $(SRC)/$(PROGNAME).c -o $(PROGNAME)_static $(CFLAGS) $(STATIC_LIBS)
-	strip --strip-all sk
-	readelf -h sk
-	du -h sk
+	strip --strip-all $(PROGNAME)_static
+	readelf -h $(PROGNAME)_static
+	du -h $(PROGNAME)_static
 
 manpage: $(DOC)/$(PROGNAME).man.asciidoc
 	a2x --doctype manpage --format manpage $(DOC)/$(PROGNAME).man.asciidoc
