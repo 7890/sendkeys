@@ -15,6 +15,12 @@ LO_FLAGS ?= $(shell pkg-config --cflags --libs liblo)
 CURSES_FLAGS ?= $(shell pkg-config --cflags --libs ncurses)
 #-lncurses -ltinfo
 
+DISTRO_LIBS_DIR = /usr/lib/x86_64-linux-gnu
+LOCAL_LIBS_DIR = /usr/local/lib
+
+#liblo: ./configure --static to get .a
+STATIC_LIBS = -l:$(LOCAL_LIBS_DIR)/liblo.a -l:$(DISTRO_LIBS_DIR)/libncurses.a -l:$(DISTRO_LIBS_DIR)/libtinfo.a -l:$(DISTRO_LIBS_DIR)/libm.a -l:$(DISTRO_LIBS_DIR)/libpthread.a
+
 SRC=src
 DOC=doc
 
@@ -29,10 +35,20 @@ RELEASE=1
 ###############################################################################
 
 default: $(PROGNAME)
-all: $(PROGNAME) manpage
+all: $(PROGNAME) $(PROGNAME)_static manpage
 
 $(PROGNAME): $(SRC)/$(PROGNAME).c
 	$(CC) $(SRC)/$(PROGNAME).c -o $(PROGNAME) $(CFLAGS) $(LO_FLAGS) $(CURSES_FLAGS)
+	ldd sk
+	du -h sk
+
+#test
+$(PROGNAME)_static: $(SRC)/$(PROGNAME).c
+#	@echo $(STATIC_LIBS)
+	$(CC) -static $(SRC)/$(PROGNAME).c -o $(PROGNAME)_static $(CFLAGS) $(STATIC_LIBS)
+	strip --strip-all sk
+	readelf -h sk
+	du -h sk
 
 manpage: $(DOC)/$(PROGNAME).man.asciidoc
 	a2x --doctype manpage --format manpage $(DOC)/$(PROGNAME).man.asciidoc
@@ -61,7 +77,7 @@ uninstall:
 	rm -f $(DESTDIR)$(MANDIR)/$(PROGNAME).1.gz
 
 clean:
-	rm -f $(PROGNAME) $(SRC)/$(PROGNAME).o
+	rm -f $(PROGNAME) $(PROGNAME)_static $(SRC)/$(PROGNAME).o
 	#$(DOC)/$(PROGNAME).1.gz
 
 .PHONY: clean all install uninstall
