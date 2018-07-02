@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <signal.h>
 #include <ctype.h>
 #include <curses.h>
-#include "lo/lo.h"
+#include <lo/lo.h>
 
 //tb/130722
 
@@ -42,14 +42,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 void error(int num, const char *m, const char *path);
 static void signal_handler(int sig);
-void sendKey(int key,char *ckey);
+void sendKey(int key, char *ckey);
 
 //default port to send OSC messages from (my port)
-const char* osc_my_server_port = "7777";
+const char *osc_my_server_port="7777";
 //default host to send OSC messages
-const char* osc_send_to_host = "127.0.0.1";
+const char *osc_send_to_host="127.0.0.1";
 //default port to send OSC messages
-const char* osc_send_to_port = "7778";
+const char *osc_send_to_port="7778";
 
 //osc server
 lo_server_thread st;
@@ -57,14 +57,14 @@ lo_address loa;
 
 static double version=0.2;
 
-int verbose = 1;
-int quiet = 0;
+int verbose=1;
+int quiet=0;
 
-int indicationCounter = 0;
+int indicationCounter=0;
 
 //curses win
-WINDOW * mainwin;
-char * checkKey(int ch);
+WINDOW *mainwin;
+char *checkKey(int ch);
 
 //data structure to hold key definitions
 struct keydesc
@@ -74,7 +74,7 @@ struct keydesc
 };
 
 //define a selection of keys we will handle
-static struct keydesc keys[] = {
+static struct keydesc keys[]={
 	{ KEY_UP,        "arrow_up"	},
 	{ KEY_DOWN,      "arrow_down"	},
 	{ KEY_LEFT,      "arrow_left"	},
@@ -117,25 +117,25 @@ int main (int argc, char *argv[])
 	// Make STDOUT unbuffered
 	setbuf(stdout, NULL);
 
-	if (argc >= 2 && 
-		( strcmp(argv[1],"-h")==0 || strcmp(argv[1],"--help")==0))
+	if (argc >=2 && 
+		(strcmp(argv[1], "-h")==0 || strcmp(argv[1], "--help")==0))
 	{
 		printf("syntax: sk <osc local port> <osc remote host> <osc remote port>\n\n");
 		return(0);
 	}
 	else if (argc >= 2 && 
-		( strcmp(argv[1],"-v")==0 || strcmp(argv[1],"--version")==0))
+		(strcmp(argv[1], "-v")==0 || strcmp(argv[1], "--version")==0))
 	{
-		printf("%f\n",version);
+		printf("%f\n", version);
 		return(0);
 	}
 	if (argc >= 2 && 
-		( strcmp(argv[1],"-i")==0 || strcmp(argv[1],"--info")==0))
+		(strcmp(argv[1], "-i")==0 || strcmp(argv[1], "--info")==0))
 	{
-		printf("sk version %f, Copyright (C) 2013  Thomas Brand\n",version);
-                printf("sk comes with ABSOLUTELY NO WARRANTY;\n");
-                printf("This is free software, and you are welcome to redistribute it\n");
-                printf("under certain conditions; see COPYING for details.\n");
+		printf("sk version %f, Copyright (C) 2013  Thomas Brand\n", version);
+		printf("sk comes with ABSOLUTELY NO WARRANTY;\n");
+		printf("This is free software, and you are welcome to redistribute it\n");
+		printf("under certain conditions; see COPYING for details.\n");
 		return(0);
 	}
 
@@ -156,13 +156,13 @@ int main (int argc, char *argv[])
 	}
 
 	//init osc
-	st = lo_server_thread_new(osc_my_server_port, error);
+	st=lo_server_thread_new(osc_my_server_port, error);
 	lo_server_thread_start(st);
 
-	loa = lo_address_new(osc_send_to_host, osc_send_to_port);
+	loa=lo_address_new(osc_send_to_host, osc_send_to_port);
 
 	//init ncurses
-	if ( (mainwin = initscr()) == NULL )
+	if ((mainwin=initscr())==NULL)
 	{
 		fprintf(stderr, "could not initialize ncurses\n");
 		exit(1);
@@ -173,7 +173,7 @@ int main (int argc, char *argv[])
 	//hide cursosr
 	curs_set(0);
 	//enable non-char keys
-	keypad(mainwin, TRUE);     
+	keypad(mainwin, TRUE);
 
 	int indent=3;
 	int lastLine=1;
@@ -181,22 +181,22 @@ int main (int argc, char *argv[])
 	//tell osc properties
 	if(verbose==1)
 	{
-		mvprintw(1,indent, "___ sk (sendkeys) ___");
-		mvprintw(2,indent, "sending OSC to %s:%s",osc_send_to_host,osc_send_to_port);
-		mvprintw(3,indent, "sending OSC from (my) port %s",osc_my_server_port);
+		mvprintw(1, indent, "___ sk (sendkeys) ___");
+		mvprintw(2, indent, "sending OSC to %s:%s", osc_send_to_host, osc_send_to_port);
+		mvprintw(3, indent, "sending OSC from (my) port %s", osc_my_server_port);
 		lastLine=5;
 	}
 	if(quiet==0)
 	{
-		mvprintw(lastLine,indent, "(waiting for input)");
+		mvprintw(lastLine, indent, "(waiting for input)");
 	}
 
 	refresh();
 
 	//abort with ctrl+c -> signal_handler cleans up
-	while ( true )
+	while (true)
 	{
-		ch = getch();
+		ch=getch();
 		if(ch==-1)
 		{
 			//continue;
@@ -204,13 +204,13 @@ int main (int argc, char *argv[])
 		}
 
 		//send osc
-		sendKey(ch,checkKey(ch));
+		sendKey(ch, checkKey(ch));
 
 		deleteln();
 		if(quiet==0 && verbose==1)
 		{
-			mvprintw(lastLine,indent, "0x%x", ch);
-			mvprintw(lastLine,indent+8, "%s", checkKey(ch));
+			mvprintw(lastLine, indent, "0x%x", ch);
+			mvprintw(lastLine, indent+8, "%s", checkKey(ch));
 			if(indicationCounter>7)
 			{
 				indicationCounter=0;
@@ -219,28 +219,28 @@ int main (int argc, char *argv[])
 			switch(indicationCounter)
 			{
 				case 0:
-					mvprintw(lastLine,indent+20, "(|)");
+					mvprintw(lastLine, indent+20, "(|)");
 					break;
 				case 1:
-					mvprintw(lastLine,indent+20, "(/)");
+					mvprintw(lastLine, indent+20, "(/)");
 					break;
 				case 2:
-					mvprintw(lastLine,indent+20, "(-)");
+					mvprintw(lastLine, indent+20, "(-)");
 					break;
 				case 3:
-					mvprintw(lastLine,indent+20, "(\\)");
+					mvprintw(lastLine, indent+20, "(\\)");
 					break;
 				case 4:
-					mvprintw(lastLine,indent+20, "(|)");
+					mvprintw(lastLine, indent+20, "(|)");
 					break;
 				case 5:
-					mvprintw(lastLine,indent+20, "(/)");
+					mvprintw(lastLine, indent+20, "(/)");
 					break;
 				case 6:
-					mvprintw(lastLine,indent+20, "(-)");
+					mvprintw(lastLine, indent+20, "(-)");
 					break;
 				case 7:
-					mvprintw(lastLine,indent+20, "(\\)");
+					mvprintw(lastLine, indent+20, "(\\)");
 					break;
 			}
 
@@ -248,7 +248,7 @@ int main (int argc, char *argv[])
 		}
 		else if(quiet==0)
 		{
-			mvprintw(lastLine,indent, "%s", checkKey(ch));
+			mvprintw(lastLine, indent, "%s", checkKey(ch));
 		}
 		refresh();
 	}
@@ -257,39 +257,39 @@ int main (int argc, char *argv[])
 //handle printable and non-printable chars
 char *checkKey(int ch)
 {
-	static char keych[2] = {0};
+	static char keych[2]={0};
 
 	//if printable char, return directly
-	if ( isprint(ch) && !(ch & KEY_CODE_YES))
+	if (isprint(ch) && !(ch & KEY_CODE_YES))
 	{
-		keych[0] = ch;
+		keych[0]=ch;
 		return keych;
 	}
 	else
 	{
 		//non-printable, find in keys[]
-		int n = 0;
+		int n=0;
 		do
 		{
-			if ( keys[n].code == ch )
+			if (keys[n].code==ch)
 			{
 				return keys[n].name;
 			}
 			n++;
-		} while ( keys[n].code != -1 );
+		} while (keys[n].code != -1);
 
 		return keys[n].name;
 	}
 }
 
 //send osc message
-void sendKey(int key,char *ckey)
+void sendKey(int key, char *ckey)
 {
 	lo_message reply=lo_message_new();
 
-	//lo_message_add_string(reply,osc_my_server_port);
-	lo_message_add_int32(reply,key);
-	lo_message_add_string(reply,ckey);
+	//lo_message_add_string(reply, osc_my_server_port);
+	lo_message_add_int32(reply, key);
+	lo_message_add_string(reply, ckey);
 
 	lo_send_message (loa, "/key", reply);
 	lo_message_free (reply);
@@ -314,3 +314,4 @@ void error(int num, const char *msg, const char *path)
 {
 	printf("liblo server error %d in path %s: %s\n", num, path, msg);
 }
+//EOF
