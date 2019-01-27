@@ -14,6 +14,7 @@ echo "abc d"|sk
 sleep 1
 #kill -9 $pid
 #cat /tmp/out.txt
+echo ""
 echo "========================================================================="
 echo "`date`"
 echo "done"
