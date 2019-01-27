@@ -19,9 +19,7 @@ install:
 before_script:
 
 script:
-    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
-        make
-      fi
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then make; fi
     - sudo make install
 # run very basic tests
     - .ci/test_run.sh
